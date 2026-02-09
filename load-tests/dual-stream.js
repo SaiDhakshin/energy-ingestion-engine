@@ -1,7 +1,7 @@
 import http from 'k6/http';
 
 export const options = {
-    vus: 100, // virtual users
+    vus: 300, // virtual users
     duration: '60s',
 };
 
@@ -31,3 +31,5 @@ export default function () {
         headers: { 'Content-Type': 'application/json' },
     });
 }
+
+// k6 run dual-stream.js
