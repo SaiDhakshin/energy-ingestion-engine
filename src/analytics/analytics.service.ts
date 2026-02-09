@@ -37,7 +37,7 @@ export class AnalyticsService {
     });
 
     if (!meterId) {
-      throw new Error('Mapping not found');
+      throw new Error(`No meter mapped to vehicle ${vehicleId}`);
     }
 
     const vehicleStats = await this.vehicleRepo

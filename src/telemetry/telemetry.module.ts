@@ -5,6 +5,7 @@ import { MeterTelemetry } from './entities/meter-telemetry.entity';
 import { VehicleCurrentStatus } from './entities/vehicle-current-status.entity';
 import { MeterCurrentStatus } from './entities/meter-current-status.entity';
 import { FleetAsset } from './entities/fleet-asset.entity';
+import { Seeder } from './seeder';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { FleetAsset } from './entities/fleet-asset.entity';
       FleetAsset,
     ]),
   ],
+  providers: [Seeder],
   exports: [TypeOrmModule],
 })
 export class TelemetryModule {}
