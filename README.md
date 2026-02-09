@@ -1,98 +1,330 @@
+<h1 align="center">⚡ Energy Ingestion Engine</h1>
+
 <p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
+A high-scale telemetry ingestion system built with <b>NestJS + PostgreSQL</b> designed to process real-time energy data from Smart Meters and EV fleets.
 </p>
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
-
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
+<p align="center">
+<b>Built with a production mindset — focusing on scalability, write-heavy workloads, and efficient analytics.</b>
 </p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
 
-## Description
+<hr>
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+<h2>📌 Problem Overview</h2>
 
-## Project setup
+Fleet operators receive telemetry every 60 seconds from two independent hardware sources:
 
-```bash
-$ npm install
-```
+<h3>🔌 Smart Meter (Grid Side)</h3>
+<ul>
+<li>Measures AC energy pulled from the utility grid</li>
+<li><b>kwhConsumedAc → billed energy</b></li>
+</ul>
 
-## Compile and run the project
+<h3>🚗 Vehicle & Charger (Battery Side)</h3>
+<ul>
+<li>Reports DC energy delivered to the battery</li>
+<li>Provides battery health metrics (SoC, temperature)</li>
+</ul>
 
-```bash
-# development
-$ npm run start
+<h3>⚡ Power Loss Insight</h3>
 
-# watch mode
-$ npm run start:dev
+<pre>
+Efficiency = DC Delivered / AC Consumed
+</pre>
 
-# production mode
-$ npm run start:prod
-```
+A drop below ~85% may indicate:
 
-## Run tests
+<ul>
+<li>charger malfunction</li>
+<li>thermal losses</li>
+<li>wiring faults</li>
+<li>energy leakage</li>
+</ul>
 
-```bash
-# unit tests
-$ npm run test
+<hr>
 
-# e2e tests
-$ npm run test:e2e
+<h2>🏗 Architecture</h2>
 
-# test coverage
-$ npm run test:cov
-```
+<pre>
+Devices
+   ↓
+Ingestion API (NestJS)
+   ↓
+Write Path Split
+   ├── HOT STORE (Upsert)
+   └── COLD STORE (Append-only)
+   ↓
+Analytics Engine
+</pre>
 
-## Deployment
+<p>
+<b>Core Principle:</b> Separate operational data from historical telemetry to prevent full table scans and maintain low-latency queries.
+</p>
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+<hr>
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+<h2>🔥 Key Engineering Decisions</h2>
 
-```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
-```
+<h3>✅ Hot vs Cold Data Separation</h3>
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+<table>
+<tr>
+<th>Hot Store</th>
+<th>Cold Store</th>
+</tr>
+<tr>
+<td>Latest device status</td>
+<td>Append-only telemetry</td>
+</tr>
+<tr>
+<td>Millisecond reads</td>
+<td>Optimized for analytics</td>
+</tr>
+<tr>
+<td>Upsert strategy</td>
+<td>Immutable history</td>
+</tr>
+</table>
 
-## Resources
+<p>
+This design mirrors real-world telemetry platforms where dashboards must remain fast even with billions of rows.
+</p>
 
-Check out a few resources that may come in handy when working with NestJS:
+---
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+<h3>✅ Insert vs Upsert Strategy</h3>
 
-## Support
+<ul>
+<li><b>INSERT → Historical tables</b> (audit-safe append-only logs)</li>
+<li><b>UPSERT → Operational tables</b> (atomic latest-state updates)</li>
+</ul>
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+Benefits:
 
-## Stay in touch
+<ul>
+<li>prevents race conditions</li>
+<li>supports real-time dashboards</li>
+<li>eliminates expensive ORDER BY queries</li>
+</ul>
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+<hr>
 
-## License
+<h3>✅ Polymorphic Ingestion</h3>
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+<p>Single ingestion endpoint handles multiple telemetry streams:</p>
+
+<pre>
+POST /v1/ingest
+</pre>
+
+Supported:
+
+<ul>
+<li>Vehicle telemetry</li>
+<li>Meter telemetry</li>
+</ul>
+
+<p>
+This approach simplifies ingestion pipelines and reflects production telemetry gateways.
+</p>
+
+<hr>
+
+<h3>✅ Index-Driven Analytics (No Full Table Scans)</h3>
+
+<p>Composite indexes ensure efficient range scans:</p>
+
+<pre>
+(vehicle_id, timestamp DESC)
+</pre>
+
+<p>
+Query plans were validated using <b>EXPLAIN ANALYZE</b> to guarantee index scans instead of sequential scans.
+</p>
+
+<hr>
+
+<h2>📊 Analytical Endpoint</h2>
+
+<pre>
+GET /v1/analytics/performance/:vehicleId
+</pre>
+
+Returns a 24-hour summary:
+
+<ul>
+<li>Total AC consumed</li>
+<li>Total DC delivered</li>
+<li>Efficiency ratio</li>
+<li>Average battery temperature</li>
+</ul>
+
+<p>
+All aggregations execute inside PostgreSQL for maximum efficiency and minimal memory usage.
+</p>
+
+<hr>
+
+<h2>⚡ Load Testing</h2>
+
+<p>
+The ingestion pipeline was stress-tested using <b>k6</b> to simulate concurrent telemetry streams.
+</p>
+
+<table>
+<tr>
+<th>Metric</th>
+<th>Result</th>
+</tr>
+<tr>
+<td>Throughput</td>
+<td><b>~3,000 req/sec</b></td>
+</tr>
+<tr>
+<td>Failure Rate</td>
+<td><b>0%</b></td>
+</tr>
+<tr>
+<td>Average Latency</td>
+<td>~78ms</td>
+</tr>
+<tr>
+<td>P95 Latency</td>
+<td>~160ms</td>
+</tr>
+</table>
+
+<p>
+The system remained stable under heavy write pressure. Expected bottlenecks emerge at the database layer under extreme concurrency — typical for write-heavy architectures.
+</p>
+
+<hr>
+
+<h2>📈 Scalability Strategy</h2>
+
+<h3>Near-Term Improvements</h3>
+
+<ul>
+<li>Time-based partitioning (daily/monthly)</li>
+<li>Batch inserts</li>
+<li>Read replicas for analytics</li>
+</ul>
+
+<h3>Future Architecture</h3>
+
+<pre>
+Devices → Load Balancer → Ingestion API → Kafka → Workers → PostgreSQL
+</pre>
+
+<p>
+A queue-based buffer protects the database from sudden ingestion spikes.
+</p>
+
+<hr>
+
+<h2>🔎 Observability</h2>
+
+<ul>
+<li>Global logging interceptor</li>
+<li>Request latency tracking</li>
+<li>Slow API detection</li>
+</ul>
+
+Example:
+
+<pre>
+POST /v1/ingest 201 - 12ms
+</pre>
+
+<hr>
+
+<h2>🐳 Running Locally</h2>
+
+<h3>Start PostgreSQL</h3>
+
+<pre>
+docker-compose up -d
+</pre>
+
+<h3>Install Dependencies</h3>
+
+<pre>
+npm install
+</pre>
+
+<h3>Start Server</h3>
+
+<pre>
+npm run start:dev
+</pre>
+
+Server runs at:
+
+<pre>
+http://localhost:3000
+</pre>
+
+<hr>
+
+<h2>🧪 Running Load Tests</h2>
+
+<pre>
+brew install k6
+k6 run load-tests/vehicle-ingestion.js
+</pre>
+
+<hr>
+
+<h2>📂 Project Structure</h2>
+
+<pre>
+src
+ ├── ingestion
+ ├── telemetry
+ ├── analytics
+ ├── database
+ └── common
+</pre>
+
+<p>
+The project follows a domain-driven structure for maintainability and scalability.
+</p>
+
+<hr>
+
+<h2>🔐 Production Considerations</h2>
+
+<ul>
+<li>Environment-based configuration recommended</li>
+<li>Disable synchronize in production</li>
+<li>Secure secrets management</li>
+<li>Structured logging preferred at scale</li>
+</ul>
+
+<hr>
+
+<h2>⭐ What This Project Demonstrates</h2>
+
+<ul>
+<li>High-throughput ingestion design</li>
+<li>Time-series data modeling</li>
+<li>Index-aware query optimization</li>
+<li>Operational vs historical storage</li>
+<li>Load testing</li>
+<li>Observability</li>
+</ul>
+
+<hr>
+
+<h2 align="center">👨‍💻 Author</h2>
+
+<p align="center">
+<b>Sai Dhakshin</b><br>
+Backend-focused engineer passionate about scalable, data-intensive systems.
+</p>
+
+<hr>
+
+<p align="center">
+<b>Built with a production-first mindset.</b>
+</p>
