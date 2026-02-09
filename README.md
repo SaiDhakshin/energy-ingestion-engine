@@ -31,12 +31,8 @@ Designed for <span class="highlight">write-heavy workloads</span> and efficient 
 Stress tested using <b>k6</b> to simulate concurrent telemetry streams.
 </p>
 
-<!-- ============================= -->
-<!-- PASTE K6 SCREENSHOT BELOW -->
-<!-- Example: screenshots/k6.png -->
-<!-- ============================= -->
+<img width="895" height="526" alt="Screenshot 2026-02-09 at 8 15 49 PM" src="https://github.com/user-attachments/assets/47f28a07-4190-404b-84db-aa51ca827d2d" />
 
-<img src="PASTE_K6_SCREENSHOT_HERE"/>
 
 </div>
 
@@ -48,11 +44,7 @@ Stress tested using <b>k6</b> to simulate concurrent telemetry streams.
 Composite indexes were validated using <b>EXPLAIN ANALYZE</b> to guarantee <span class="highlight">Index Scan</span> and prevent full table scans.
 </p>
 
-<!-- ============================= -->
-<!-- PASTE EXPLAIN ANALYZE SCREENSHOT -->
-<!-- ============================= -->
-
-<img src="PASTE_EXPLAIN_SCREENSHOT_HERE"/>
+<img width="1041" height="237" alt="Screenshot 2026-02-09 at 9 00 54 PM" src="https://github.com/user-attachments/assets/d8908f5c-569e-4490-aa1e-b6c472f3f22a" />
 
 </div>
 
@@ -116,11 +108,7 @@ Future-ready improvements:
 Global logging interceptor tracks request latency and detects slow API calls.
 </p>
 
-<!-- ============================= -->
-<!-- OPTIONAL: PASTE LOGGING SCREENSHOT -->
-<!-- ============================= -->
-
-<img src="PASTE_LOG_SCREENSHOT_HERE"/>
+<img width="1005" height="409" alt="Screenshot 2026-02-09 at 9 04 35 PM" src="https://github.com/user-attachments/assets/9d784ed9-1fda-4ce5-a376-d55f42d0b45c" />
 
 </div>
 
