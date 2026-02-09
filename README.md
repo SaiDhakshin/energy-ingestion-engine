@@ -1,307 +1,204 @@
-<h1 align="center">⚡ Energy Ingestion Engine</h1>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Energy Ingestion Engine</title>
 
-<p align="center">
-A high-scale telemetry ingestion system built with <b>NestJS + PostgreSQL</b> designed to process real-time energy data from Smart Meters and EV fleets.
+<style>
+
+body{
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto;
+    max-width: 950px;
+    margin: auto;
+    padding: 40px;
+    line-height: 1.6;
+    background:#fafafa;
+}
+
+h1{
+    text-align:center;
+}
+
+.card{
+    background:white;
+    padding:25px;
+    margin:20px 0;
+    border-radius:12px;
+    box-shadow:0 4px 10px rgba(0,0,0,.05);
+}
+
+.highlight{
+    font-weight:bold;
+    color:#0a7cff;
+}
+
+pre{
+    background:#111;
+    color:#00ff9c;
+    padding:15px;
+    border-radius:8px;
+    overflow:auto;
+}
+
+img{
+    width:100%;
+    border-radius:10px;
+    margin-top:15px;
+}
+
+.badge{
+    display:inline-block;
+    background:#e6f2ff;
+    color:#0a7cff;
+    padding:6px 12px;
+    border-radius:20px;
+    margin:5px;
+    font-weight:600;
+}
+
+ul{
+    padding-left:20px;
+}
+
+</style>
+</head>
+
+<body>
+
+<h1>⚡ Energy Ingestion Engine</h1>
+
+<p style="text-align:center;">
+High-scale telemetry ingestion system built with <b>NestJS + PostgreSQL</b>  
+Designed for <span class="highlight">write-heavy workloads</span> and efficient analytics.
 </p>
 
-<p align="center">
-<b>Built with a production mindset — focusing on scalability, write-heavy workloads, and efficient analytics.</b>
+<div class="card">
+
+<h2>🚀 Key Highlights</h2>
+
+<span class="badge">~3,000 req/sec</span>
+<span class="badge">0% failure rate</span>
+<span class="badge">Hot vs Cold Storage</span>
+<span class="badge">Index-driven queries</span>
+<span class="badge">Insert + Upsert</span>
+<span class="badge">Polymorphic ingestion</span>
+
+</div>
+
+<div class="card">
+
+<h2>📊 Load Test Results</h2>
+
+<p>
+Stress tested using <b>k6</b> to simulate concurrent telemetry streams.
 </p>
 
-<hr>
+<!-- ============================= -->
+<!-- PASTE K6 SCREENSHOT BELOW -->
+<!-- Example: screenshots/k6.png -->
+<!-- ============================= -->
 
-<h2>📌 Problem Overview</h2>
+<img src="PASTE_K6_SCREENSHOT_HERE"/>
 
-Fleet operators receive telemetry every 60 seconds from two independent hardware sources:
+</div>
 
-<h3>🔌 Smart Meter (Grid Side)</h3>
-<ul>
-<li>Measures AC energy pulled from the utility grid</li>
-<li><b>kwhConsumedAc → billed energy</b></li>
-</ul>
+<div class="card">
 
-<h3>🚗 Vehicle & Charger (Battery Side)</h3>
-<ul>
-<li>Reports DC energy delivered to the battery</li>
-<li>Provides battery health metrics (SoC, temperature)</li>
-</ul>
+<h2>⚡ Query Performance</h2>
 
-<h3>⚡ Power Loss Insight</h3>
+<p>
+Composite indexes were validated using <b>EXPLAIN ANALYZE</b> to guarantee <span class="highlight">Index Scan</span> and prevent full table scans.
+</p>
 
-<pre>
-Efficiency = DC Delivered / AC Consumed
-</pre>
+<!-- ============================= -->
+<!-- PASTE EXPLAIN ANALYZE SCREENSHOT -->
+<!-- ============================= -->
 
-A drop below ~85% may indicate:
+<img src="PASTE_EXPLAIN_SCREENSHOT_HERE"/>
 
-<ul>
-<li>charger malfunction</li>
-<li>thermal losses</li>
-<li>wiring faults</li>
-<li>energy leakage</li>
-</ul>
+</div>
 
-<hr>
+<div class="card">
 
 <h2>🏗 Architecture</h2>
 
 <pre>
 Devices
    ↓
-Ingestion API (NestJS)
+Ingestion API
    ↓
 Write Path Split
-   ├── HOT STORE (Upsert)
-   └── COLD STORE (Append-only)
-   ↓
-Analytics Engine
+   ├── HOT STORE (Upsert → fast reads)
+   └── COLD STORE (Append-only → analytics)
 </pre>
 
 <p>
-<b>Core Principle:</b> Separate operational data from historical telemetry to prevent full table scans and maintain low-latency queries.
+<b>Core Principle:</b> Separate operational state from historical telemetry to maintain low latency at scale.
 </p>
 
-<hr>
+</div>
 
-<h2>🔥 Key Engineering Decisions</h2>
+<div class="card">
 
-<h3>✅ Hot vs Cold Data Separation</h3>
-
-<table>
-<tr>
-<th>Hot Store</th>
-<th>Cold Store</th>
-</tr>
-<tr>
-<td>Latest device status</td>
-<td>Append-only telemetry</td>
-</tr>
-<tr>
-<td>Millisecond reads</td>
-<td>Optimized for analytics</td>
-</tr>
-<tr>
-<td>Upsert strategy</td>
-<td>Immutable history</td>
-</tr>
-</table>
-
-<p>
-This design mirrors real-world telemetry platforms where dashboards must remain fast even with billions of rows.
-</p>
-
----
-
-<h3>✅ Insert vs Upsert Strategy</h3>
+<h2>🔥 Engineering Decisions</h2>
 
 <ul>
-<li><b>INSERT → Historical tables</b> (audit-safe append-only logs)</li>
-<li><b>UPSERT → Operational tables</b> (atomic latest-state updates)</li>
+<li><b>Hot vs Cold Tables</b> → millisecond dashboard reads</li>
+<li><b>Append-only history</b> → audit-safe telemetry</li>
+<li><b>Atomic upserts</b> → prevents race conditions</li>
+<li><b>Composite indexes</b> → eliminates sequential scans</li>
 </ul>
 
-Benefits:
+</div>
 
-<ul>
-<li>prevents race conditions</li>
-<li>supports real-time dashboards</li>
-<li>eliminates expensive ORDER BY queries</li>
-</ul>
-
-<hr>
-
-<h3>✅ Polymorphic Ingestion</h3>
-
-<p>Single ingestion endpoint handles multiple telemetry streams:</p>
-
-<pre>
-POST /v1/ingest
-</pre>
-
-Supported:
-
-<ul>
-<li>Vehicle telemetry</li>
-<li>Meter telemetry</li>
-</ul>
-
-<p>
-This approach simplifies ingestion pipelines and reflects production telemetry gateways.
-</p>
-
-<hr>
-
-<h3>✅ Index-Driven Analytics (No Full Table Scans)</h3>
-
-<p>Composite indexes ensure efficient range scans:</p>
-
-<pre>
-(vehicle_id, timestamp DESC)
-</pre>
-
-<p>
-Query plans were validated using <b>EXPLAIN ANALYZE</b> to guarantee index scans instead of sequential scans.
-</p>
-
-<hr>
-
-<h2>📊 Analytical Endpoint</h2>
-
-<pre>
-GET /v1/analytics/performance/:vehicleId
-</pre>
-
-Returns a 24-hour summary:
-
-<ul>
-<li>Total AC consumed</li>
-<li>Total DC delivered</li>
-<li>Efficiency ratio</li>
-<li>Average battery temperature</li>
-</ul>
-
-<p>
-All aggregations execute inside PostgreSQL for maximum efficiency and minimal memory usage.
-</p>
-
-<hr>
-
-<h2>⚡ Load Testing</h2>
-
-<p>
-The ingestion pipeline was stress-tested using <b>k6</b> to simulate concurrent telemetry streams.
-</p>
-
-<table>
-<tr>
-<th>Metric</th>
-<th>Result</th>
-</tr>
-<tr>
-<td>Throughput</td>
-<td><b>~3,000 req/sec</b></td>
-</tr>
-<tr>
-<td>Failure Rate</td>
-<td><b>0%</b></td>
-</tr>
-<tr>
-<td>Average Latency</td>
-<td>~78ms</td>
-</tr>
-<tr>
-<td>P95 Latency</td>
-<td>~160ms</td>
-</tr>
-</table>
-
-<p>
-The system remained stable under heavy write pressure. Expected bottlenecks emerge at the database layer under extreme concurrency — typical for write-heavy architectures.
-</p>
-
-<hr>
+<div class="card">
 
 <h2>📈 Scalability Strategy</h2>
 
-<h3>Near-Term Improvements</h3>
-
-<ul>
-<li>Time-based partitioning (daily/monthly)</li>
-<li>Batch inserts</li>
-<li>Read replicas for analytics</li>
-</ul>
-
-<h3>Future Architecture</h3>
-
-<pre>
-Devices → Load Balancer → Ingestion API → Kafka → Workers → PostgreSQL
-</pre>
-
 <p>
-A queue-based buffer protects the database from sudden ingestion spikes.
+Designed to support <b>14.4M+ records/day</b>.
 </p>
 
-<hr>
+Future-ready improvements:
+
+<ul>
+<li>Time-based partitioning</li>
+<li>Batch inserts</li>
+<li>Read replicas</li>
+<li>Kafka ingestion buffer</li>
+</ul>
+
+</div>
+
+<div class="card">
 
 <h2>🔎 Observability</h2>
 
-<ul>
-<li>Global logging interceptor</li>
-<li>Request latency tracking</li>
-<li>Slow API detection</li>
-</ul>
+<p>
+Global logging interceptor tracks request latency and detects slow API calls.
+</p>
 
-Example:
+<!-- ============================= -->
+<!-- OPTIONAL: PASTE LOGGING SCREENSHOT -->
+<!-- ============================= -->
 
-<pre>
-POST /v1/ingest 201 - 12ms
-</pre>
+<img src="PASTE_LOG_SCREENSHOT_HERE"/>
 
-<hr>
+</div>
 
-<h2>🐳 Running Locally</h2>
+<div class="card">
 
-<h3>Start PostgreSQL</h3>
+<h2>🐳 Run Locally</h2>
 
 <pre>
 docker-compose up -d
-</pre>
-
-<h3>Install Dependencies</h3>
-
-<pre>
 npm install
+npm run start
 </pre>
 
-<h3>Start Server</h3>
+</div>
 
-<pre>
-npm run start:dev
-</pre>
-
-Server runs at:
-
-<pre>
-http://localhost:3000
-</pre>
-
-<hr>
-
-<h2>🧪 Running Load Tests</h2>
-
-<pre>
-brew install k6
-k6 run load-tests/vehicle-ingestion.js
-</pre>
-
-<hr>
-
-<h2>📂 Project Structure</h2>
-
-<pre>
-src
- ├── ingestion
- ├── telemetry
- ├── analytics
- ├── database
- └── common
-</pre>
-
-<p>
-The project follows a domain-driven structure for maintainability and scalability.
-</p>
-
-<hr>
-
-<h2>🔐 Production Considerations</h2>
-
-<ul>
-<li>Environment-based configuration recommended</li>
-<li>Disable synchronize in production</li>
-<li>Secure secrets management</li>
-<li>Structured logging preferred at scale</li>
-</ul>
-
-<hr>
+<div class="card">
 
 <h2>⭐ What This Project Demonstrates</h2>
 
@@ -310,21 +207,14 @@ The project follows a domain-driven structure for maintainability and scalabilit
 <li>Time-series data modeling</li>
 <li>Index-aware query optimization</li>
 <li>Operational vs historical storage</li>
-<li>Load testing</li>
-<li>Observability</li>
+<li>Production mindset</li>
 </ul>
 
-<hr>
+</div>
 
-<h2 align="center">👨‍💻 Author</h2>
-
-<p align="center">
-<b>Sai Dhakshin</b><br>
-Backend-focused engineer passionate about scalable, data-intensive systems.
+<p style="text-align:center; margin-top:40px;">
+<b>Author:</b> Sai Dhakshin
 </p>
 
-<hr>
-
-<p align="center">
-<b>Built with a production-first mindset.</b>
-</p>
+</body>
+</html>
