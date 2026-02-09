@@ -6,11 +6,120 @@
 <h1>⚡ Energy Ingestion Engine</h1>
 
 <p style="text-align:center;">
-High-scale telemetry ingestion system built with <b>NestJS + PostgreSQL</b>  
-Designed for <span class="highlight">write-heavy workloads</span> and efficient analytics.
+Processes telemetry from smart meters and EV fleets, correlating AC consumption with DC delivery to compute real-time charging efficiency.
 </p>
 
 <div class="card">
+
+<h2>📁 Project Structure</h2>
+
+<p>
+Organized using a domain-driven approach to promote scalability and maintainability.
+</p>
+
+<pre>
+src/
+ ├── ingestion      → telemetry ingestion pipeline
+ ├── telemetry      → entities & repositories
+ ├── analytics      → performance queries
+ ├── database       → DB configuration & seeding
+ └── common         → interceptors, pipes, utilities
+</pre>
+
+</div>
+
+
+<div class="card">
+
+<h2>🚀 Quick Start (Recommended)</h2>
+
+<p>
+Get the entire system running in under a minute using Docker.
+</p>
+
+<h3>1️⃣ Clone the repository</h3>
+
+<pre>
+git clone https://github.com/SaiDhakshin/energy-ingestion-engine.git
+cd energy-ingestion-engine
+</pre>
+
+<pre>
+# if using Docker add this in .env file
+DB_HOST=postgres
+</pre>
+
+<h3>2️⃣ Start the container stack</h3>
+
+<pre>
+docker compose up --build
+</pre>
+
+<p>This will automatically start:</p>
+
+<ul>
+<li>✅ PostgreSQL database</li>
+<li>✅ NestJS API</li>
+<li>✅ Automatic fleet mapping seeding</li>
+<li>✅ Dependency-aware startup (waits for DB readiness)</li>
+</ul>
+
+<p><b>No manual database setup required.</b></p>
+
+<p>API available at:</p>
+
+<pre>
+http://localhost:3000
+</pre>
+
+<h3>Stop containers</h3>
+
+<pre>
+docker compose down
+</pre>
+
+<h3>Reset database</h3>
+
+<pre>
+docker compose down -v
+</pre>
+
+<p>
+<b>The application waits for PostgreSQL readiness before startup, ensuring reliable container orchestration.</b>
+</p>
+
+</div>
+
+<div class="card">
+
+<h2>💻 Run Locally (Without Docker)</h2>
+
+<p>
+For developers who prefer running services natively.
+</p>
+
+<h3>1️⃣ Install dependencies</h3>
+
+<pre>
+npm install
+</pre>
+
+<h3>3️⃣ Start the server</h3>
+
+<pre>
+npm run start:dev
+</pre>
+
+<p>
+API will be available at:
+</p>
+
+<pre>
+http://localhost:3000
+</pre>
+
+</div>
+
 
 <h2>🚀 Key Highlights</h2>
 
@@ -109,18 +218,6 @@ Global logging interceptor tracks request latency and detects slow API calls.
 </p>
 
 <img width="1005" height="409" alt="Screenshot 2026-02-09 at 9 04 35 PM" src="https://github.com/user-attachments/assets/9d784ed9-1fda-4ce5-a376-d55f42d0b45c" />
-
-</div>
-
-<div class="card">
-
-<h2>🐳 Run Locally</h2>
-
-<pre>
-docker-compose up -d
-npm install
-npm run start
-</pre>
 
 </div>
 
