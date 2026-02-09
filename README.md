@@ -3,7 +3,7 @@
 
 <body>
 
-<h1>⚡ Energy Ingestion Engine</h1>
+<h1>Energy Ingestion Engine</h1>
 
 <p style="text-align:center;">
 Processes telemetry from smart meters and EV fleets, correlating AC consumption with DC delivery to compute real-time charging efficiency.
@@ -98,13 +98,13 @@ docker compose down -v
 For developers who prefer running services natively.
 </p>
 
-<h3>1️⃣ Install dependencies</h3>
+<h3>Install dependencies</h3>
 
 <pre>
 npm install
 </pre>
 
-<h3>3️⃣ Start the server</h3>
+<h3>Start the server</h3>
 
 <pre>
 npm run start:dev
